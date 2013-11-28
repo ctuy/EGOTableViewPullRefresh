@@ -30,6 +30,13 @@
 #define TEXT_COLOR	 [UIColor colorWithRed:87.0/255.0 green:108.0/255.0 blue:137.0/255.0 alpha:1.0]
 #define FLIP_ANIMATION_DURATION 0.18f
 
+@interface EGORefreshTableHeaderView ()
+
+@property (nonatomic, strong) UILabel *lastUpdatedLabel;
+@property (nonatomic, strong) UILabel *statusLabel;
+
+@end
+
 
 @interface EGORefreshTableHeaderView (Private)
 - (void)setState:(EGOPullRefreshState)aState;
@@ -53,7 +60,7 @@
 		label.shadowColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
 		label.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		label.backgroundColor = [UIColor clearColor];
-		label.textAlignment = UITextAlignmentCenter;
+		label.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:label];
 		_lastUpdatedLabel=label;
 		[label release];
@@ -65,32 +72,11 @@
 		label.shadowColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
 		label.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		label.backgroundColor = [UIColor clearColor];
-		label.textAlignment = UITextAlignmentCenter;
+		label.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:label];
 		_statusLabel=label;
 		[label release];
-		
-		CALayer *layer = [CALayer layer];
-		layer.frame = CGRectMake(25.0f, frame.size.height - 65.0f, 30.0f, 55.0f);
-		layer.contentsGravity = kCAGravityResizeAspect;
-		layer.contents = (id)[UIImage imageNamed:@"blueArrow.png"].CGImage;
-		
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
-		if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-			layer.contentsScale = [[UIScreen mainScreen] scale];
-		}
-#endif
-		
-		[[self layer] addSublayer:layer];
-		_arrowImage=layer;
-		
-		UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-		view.frame = CGRectMake(25.0f, frame.size.height - 38.0f, 20.0f, 20.0f);
-		[self addSubview:view];
-		_activityView = view;
-		[view release];
-		
-		
+				
 		[self setState:EGOOPullRefreshNormal];
 		
     }
@@ -131,7 +117,7 @@
 	switch (aState) {
 		case EGOOPullRefreshPulling:
 			
-			_statusLabel.text = NSLocalizedString(@"Release to refresh...", @"Release to refresh status");
+			_statusLabel.text = self.releaseStatusText;
 			[CATransaction begin];
 			[CATransaction setAnimationDuration:FLIP_ANIMATION_DURATION];
 			_arrowImage.transform = CATransform3DMakeRotation((M_PI / 180.0) * 180.0f, 0.0f, 0.0f, 1.0f);
@@ -147,7 +133,7 @@
 				[CATransaction commit];
 			}
 			
-			_statusLabel.text = NSLocalizedString(@"Pull down to refresh...", @"Pull down to refresh status");
+			_statusLabel.text = self.pullStatusText;
 			[_activityView stopAnimating];
 			[CATransaction begin];
 			[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions]; 
@@ -160,7 +146,7 @@
 			break;
 		case EGOOPullRefreshLoading:
 			
-			_statusLabel.text = NSLocalizedString(@"Loading...", @"Loading Status");
+			_statusLabel.text = self.loadingStatusText;
 			[_activityView startAnimating];
 			[CATransaction begin];
 			[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions]; 
@@ -226,7 +212,7 @@
 		[UIView setAnimationDuration:0.2];
 		scrollView.contentInset = UIEdgeInsetsMake(60.0f, 0.0f, 0.0f, 0.0f);
 		[UIView commitAnimations];
-		
+
 	}
 	
 }
@@ -242,6 +228,35 @@
 
 }
 
+- (void)setActivityView:(id<EGORefreshTableHeaderActivityIndicatorProtocol>)activityView
+{
+    UIView *activityViewCast = (UIView *)activityView;
+    activityViewCast.frame = CGRectMake(25.0f, self.frame.size.height - 38.0f, 20.0f, 20.0f);
+    [self addSubview:activityViewCast];
+    _activityView = activityView;
+    [self setNeedsLayout];
+}
+
+- (void)setArrow:(UIImage *)arrow
+{
+    [_arrowImage removeFromSuperlayer];
+    
+    CALayer *layer = [CALayer layer];
+    layer.frame = CGRectMake(25.0f, self.frame.size.height - 65.0f, 30.0f, 55.0f);
+    layer.contentsGravity = kCAGravityResizeAspect;
+    layer.contents = (id)arrow.CGImage;
+    
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
+        layer.contentsScale = [[UIScreen mainScreen] scale];
+    }
+#endif
+    
+    [[self layer] addSublayer:layer];
+    _arrowImage=layer;
+    
+    [self setNeedsDisplay];
+}
 
 #pragma mark -
 #pragma mark Dealloc

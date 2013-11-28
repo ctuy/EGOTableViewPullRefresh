@@ -27,6 +27,13 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
+@protocol EGORefreshTableHeaderActivityIndicatorProtocol <NSObject>
+
+- (void)startAnimating;
+- (void)stopAnimating;
+
+@end
+
 typedef enum{
 	EGOOPullRefreshPulling = 0,
 	EGOOPullRefreshNormal,
@@ -39,15 +46,18 @@ typedef enum{
 	id _delegate;
 	EGOPullRefreshState _state;
 
-	UILabel *_lastUpdatedLabel;
-	UILabel *_statusLabel;
 	CALayer *_arrowImage;
-	UIActivityIndicatorView *_activityView;
-	
 
 }
 
 @property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
+@property (nonatomic, strong) id <EGORefreshTableHeaderActivityIndicatorProtocol> activityView;
+@property (nonatomic, strong) NSString *releaseStatusText;
+@property (nonatomic, strong) NSString *pullStatusText;
+@property (nonatomic, strong) NSString *loadingStatusText;
+@property (nonatomic, strong, readonly) UILabel *lastUpdatedLabel;
+@property (nonatomic, strong, readonly) UILabel *statusLabel;
+@property (nonatomic, strong) UIImage *arrow;
 
 - (void)refreshLastUpdatedDate;
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;

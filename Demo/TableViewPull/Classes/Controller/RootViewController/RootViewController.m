@@ -35,6 +35,12 @@
 		
 		EGORefreshTableHeaderView *view = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.view.frame.size.width, self.tableView.bounds.size.height)];
 		view.delegate = self;
+        view.activityView = (id)[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        view.pullStatusText = @"Hila";
+        view.releaseStatusText = @"Bitiw";
+        view.loadingStatusText = @"Wait Lang";
+        view.arrow = [UIImage imageNamed:@"whiteArrow.png"];
+        
 		[self.tableView addSubview:view];
 		_refreshHeaderView = view;
 		[view release];
