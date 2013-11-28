@@ -231,7 +231,9 @@
 - (void)setActivityView:(id<EGORefreshTableHeaderActivityIndicatorProtocol>)activityView
 {
     UIView *activityViewCast = (UIView *)activityView;
-    activityViewCast.frame = CGRectMake(25.0f, self.frame.size.height - 38.0f, 20.0f, 20.0f);
+    [activityViewCast sizeToFit];
+    CGFloat y = self.statusLabel.center.y + (self.lastUpdatedLabel.center.y - self.statusLabel.center.y) / 2;
+    activityViewCast.center = CGPointMake(activityViewCast.bounds.size.width / 2 + 10.0f, y);
     [self addSubview:activityViewCast];
     _activityView = activityView;
     [self setNeedsLayout];
