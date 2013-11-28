@@ -233,7 +233,7 @@
     UIView *activityViewCast = (UIView *)activityView;
     [activityViewCast sizeToFit];
     CGFloat y = self.statusLabel.center.y + (self.lastUpdatedLabel.center.y - self.statusLabel.center.y) / 2;
-    activityViewCast.center = CGPointMake(activityViewCast.bounds.size.width / 2 + 10.0f, y);
+    activityViewCast.center = CGPointMake(48 - activityViewCast.bounds.size.width / 2, y);
     [self addSubview:activityViewCast];
     _activityView = activityView;
     [self setNeedsLayout];
