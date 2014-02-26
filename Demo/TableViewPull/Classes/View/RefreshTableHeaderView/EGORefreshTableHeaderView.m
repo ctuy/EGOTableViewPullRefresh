@@ -38,10 +38,6 @@
 @end
 
 
-@interface EGORefreshTableHeaderView (Private)
-- (void)setState:(EGOPullRefreshState)aState;
-@end
-
 @implementation EGORefreshTableHeaderView
 
 @synthesize delegate=_delegate;
