@@ -38,6 +38,10 @@
 @end
 
 
+@interface EGORefreshTableHeaderView (Private)
+- (void)setState:(EGOPullRefreshState)aState;
+@end
+
 @implementation EGORefreshTableHeaderView
 
 @synthesize delegate=_delegate;
@@ -222,6 +226,19 @@
 	
 	[self setState:EGOOPullRefreshNormal];
 
+}
+
+- (void)egoRefreshScrollViewDataSourceStartManualLoading:(UIScrollView *)scrollView {
+    [self setState:EGOOPullRefreshLoading];
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.2];
+    scrollView.contentInset = UIEdgeInsetsMake(60.0f, 0.0f, 0.0f, 0.0f);
+    [UIView commitAnimations];
+    
+    if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
+        [_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
+    }
 }
 
 - (void)setActivityView:(id<EGORefreshTableHeaderActivityIndicatorProtocol>)activityView
